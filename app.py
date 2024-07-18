@@ -2,19 +2,11 @@ from flask import Flask, request, jsonify
 import pandas as pd
 import requests
 from io import BytesIO
-import os
-from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-# Load environment variables from a .env file if it exists
-load_dotenv()
-
-# Get the URL of the Excel file from the environment variable
-EXCEL_URL = os.getenv('EXCEL_URL')
-
-if not EXCEL_URL:
-    raise ValueError("No EXCEL_URL set for Flask application. Set the EXCEL_URL environment variable.")
+# URL of the Excel file
+EXCEL_URL = 'https://ibm.box.com/shared/static/brx199pxik47jizxka9pdy4563084tuw.xlsx'
 
 def download_excel(url):
     response = requests.get(url)
