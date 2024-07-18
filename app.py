@@ -15,25 +15,23 @@ def download_excel(url):
 
 @app.route('/search', methods=['GET'])
 def search():
-    queries = request.args.getlist('query')
-    columns = request.args.getlist('column')
-
-    if not queries or not columns or len(queries) != len(columns):
-        return jsonify({'error': 'Query and column parameters are required, and their lengths must match.'}), 400
 
     # Load the Excel file into a DataFrame
     excel_data = download_excel(EXCEL_URL)
     df = pd.read_excel(excel_data)
 
-    # Check if the columns exist in the DataFrame
-    for column in columns:
-        if column not in df.columns:
-            return jsonify({'error': f'Column {column} does not exist in the Excel file.'}), 400
+    name_query = request.args.get('name', '')
+    title_query = request.args.get('title', '')
+    country_query = request.args.get('country', '')
 
-    # Perform the search for each query-column pair
     mask = pd.Series([True] * len(df))
-    for query, column in zip(queries, columns):
-        mask &= df[column].astype(str).str.contains(query, case=False, na=False)
+
+    if name_query:
+        mask &= df['name'].astype(str).str.contains(name_query, case=False, na=False)
+    if title_query:
+        mask &= df['title'].astype(str).str.contains(title_query, case=False, na=False)
+    if country_query:
+        mask &= df['country'].astype(str).str.contains(country_query, case=False, na=False)
 
     results = df[mask]
 
